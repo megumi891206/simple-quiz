@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="A ten-question general knowledge quiz."><title>General Knowledge Quiz</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:700px;margin:20px;line-height:1.4}fieldset{border:0;padding:0;margin:24px 0}legend{font-weight:bold;margin-bottom:8px}.num{margin-right:6px}label{display:block;margin:6px 0}.track{display:none}.status{margin:16px 0}.feedback{margin-top:8px}.result{margin:20px 0;padding:10px;border:1px solid #999}.actions{margin-top:20px}button{padding:6px 12px}[hidden]{display:none!important}
+</style></head><body>
+<main><h1>General Knowledge Quiz</h1><p>Answer all 10 questions, then submit to see your score.</p>
+<div class="status"><span id="progress" aria-live="polite">0 of 10 answered</span></div><div class="track"><div class="bar" id="bar"></div></div>
+<section id="result" class="result" tabindex="-1" aria-live="polite" hidden></section>
+<form id="quiz"><div id="questions"></div><p id="error" role="alert" hidden>Please answer every question before checking your score.</p><div class="actions"><button type="submit" id="submit">Submit</button> <button type="button" id="retry" hidden>Try again</button></div></form>
+<noscript>Please enable JavaScript to take this interactive quiz.</noscript></main>
+<script>
+const questions=[
+{q:'Which planet is known as the Red Planet?',o:['Venus','Mars','Jupiter','Mercury'],a:1,e:'Iron oxide on its surface gives Mars its reddish appearance.'},
+{q:'What is the largest ocean on Earth?',o:['Atlantic Ocean','Indian Ocean','Arctic Ocean','Pacific Ocean'],a:3,e:'The Pacific is the largest and deepest of Earth’s oceans.'},
+{q:'How many sides does a hexagon have?',o:['Five','Seven','Six','Eight'],a:2,e:'A hexagon is a polygon with six sides.'},
+{q:'Which gas do plants absorb during photosynthesis?',o:['Carbon dioxide','Oxygen','Helium','Hydrogen'],a:0,e:'Plants use carbon dioxide and water, with light energy, to make sugars.'},
+{q:'Who wrote Romeo and Juliet?',o:['Charles Dickens','Jane Austen','Mark Twain','William Shakespeare'],a:3,e:'William Shakespeare wrote the tragedy Romeo and Juliet.'},
+{q:'What is the chemical formula for water?',o:['CO₂','H₂O','O₂','NaCl'],a:1,e:'Each water molecule contains two hydrogen atoms and one oxygen atom.'},
+{q:'Which country is home to the city of Kyoto?',o:['Japan','Thailand','China','South Korea'],a:0,e:'Kyoto is a city in Japan and was once its capital.'},
+{q:'What is 12 × 8?',o:['86','108','96','88'],a:2,e:'Twelve multiplied by eight equals ninety-six.'},
+{q:'Which instrument typically has 88 keys?',o:['Violin','Flute','Trumpet','Piano'],a:3,e:'A standard modern piano has 52 white keys and 36 black keys.'},
+{q:'Which is the smallest prime number?',o:['0','1','2','3'],a:2,e:'Two has exactly two positive divisors, 1 and itself, making it the smallest prime.'}
+];
+const form=document.querySelector('#quiz'),container=document.querySelector('#questions');
+questions.forEach((q,i)=>{const field=document.createElement('fieldset');field.id='q'+i;const legend=document.createElement('legend');const num=document.createElement('span');num.className='num';num.textContent='QUESTION '+String(i+1).padStart(2,'0');legend.append(num,document.createTextNode(q.q));field.append(legend);const choices=document.createElement('div');choices.className='choices';q.o.forEach((option,j)=>{const label=document.createElement('label'),input=document.createElement('input');input.type='radio';input.name='q'+i;input.value=j;label.append(input,document.createTextNode(option));choices.append(label)});field.append(choices);container.append(field)});
+form.addEventListener('change',()=>{const count=questions.filter((_,i)=>form.querySelector('input[name="q'+i+'"]:checked')).length;document.querySelector('#progress').textContent=count+' of 10 answered';document.querySelector('#bar').style.width=count*10+'%';document.querySelector('#error').hidden=true});
+form.addEventListener('submit',event=>{event.preventDefault();const answers=questions.map((_,i)=>form.querySelector('input[name="q'+i+'"]:checked'));const missing=answers.findIndex(a=>!a);if(missing!==-1){document.querySelector('#error').hidden=false;document.querySelector('#q'+missing+' input').focus();return}let score=0;questions.forEach((q,i)=>{const ok=Number(answers[i].value)===q.a;if(ok)score++;const field=document.querySelector('#q'+i);field.classList.add(ok?'correct':'incorrect');const feedback=document.createElement('div');feedback.className='feedback';feedback.textContent=(ok?'✓ Correct. ':'✗ Correct answer: '+q.o[q.a]+'. ')+q.e;field.append(feedback)});form.querySelectorAll('input').forEach(i=>i.disabled=true);const result=document.querySelector('#result');result.replaceChildren();const heading=document.createElement('h2');heading.textContent=score+' / 10 · '+score*10+'%';const message=document.createElement('p');message.textContent=score===10?'A perfect round! Your curiosity is paying off.':score>=7?'Nicely done! Explore the answers below to learn a little more.':'Every question is a chance to discover something new. Explore the answers below and try again.';result.append(heading,message);result.hidden=false;document.querySelector('#submit').hidden=true;document.querySelector('#retry').hidden=false;result.focus()});
+document.querySelector('#retry').addEventListener('click',()=>{form.reset();form.querySelectorAll('input').forEach(i=>i.disabled=false);form.querySelectorAll('.feedback').forEach(e=>e.remove());form.querySelectorAll('fieldset').forEach(e=>e.classList.remove('correct','incorrect'));document.querySelector('#result').hidden=true;document.querySelector('#submit').hidden=false;document.querySelector('#retry').hidden=true;document.querySelector('#progress').textContent='0 of 10 answered';document.querySelector('#bar').style.width='0%';form.querySelector('input').focus()});
+</script></body></html>
+
